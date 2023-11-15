@@ -1,0 +1,45 @@
+server:
+  port: 7070
+
+spring:
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/shardingsphere_demo?autoReconnect=true&useSSL=false&allowMultiQueries=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+    username: root
+    password: root
+    driver-class-name: com.mysql.jdbc.Driver
+
+  shardingsphere:
+    # 配置显示sql，这项配置在测试的时候非常有用，建议打开，可以看到路由结果，生产环境可以关掉
+    props:
+      sql-show: true
+    datasource:
+      # 配置数据源列表，多个数据源使用逗号分割
+      names: db1
+      db1:
+        type: com.zaxxer.hikari.HikariDataSource
+        driver-class-name: com.mysql.jdbc.Driver
+        url: jdbc:mysql://127.0.0.1:3306/shardingsphere_demo?autoReconnect=true&useSSL=false&allowMultiQueries=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+        username: root
+        password: root
+    rules:
+      sharding:
+        tables:
+          # 需要分表的逻辑表名, 如果需要配置多个数据表，按照这个规则配置就可以
+          t_order:
+            # 表的真实表列表（需要注意这里的表都应该存在，否则就有可能出现我第一篇文章里面提到的 NPE 异常）
+            actual-data-nodes: db1.t_order20230${1..9}, db1.t_order2023${10..12}
+            # 分片策略配置
+            table-strategy:
+              standard:
+                # 分片算法是 algorithms1, 这个名称是在下面配置的
+                sharding-algorithm-name: algorithms1
+                # 分片列是 acquisition_time， 需要注意的是，分表算法的数据类型一定要和这个分片的列数据类型一致
+                sharding-column: create_time
+
+        # 配置分片算法
+        sharding-algorithms:
+          # 分片算法名称
+          algorithms1:
+            # 分片算法类型，这个type就是我们的分片算法实现类中 getType() 的返回值，SPI适用于这种方式
+            type: HIS_DATA_SPI_BASED
+

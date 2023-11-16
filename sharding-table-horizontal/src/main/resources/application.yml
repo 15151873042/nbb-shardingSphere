@@ -2,6 +2,9 @@ server:
   port: 7070
 
 spring:
+  mvc:
+    format:
+      date-time: yyyy-MM-dd HH:mm:ss
   datasource:
     url: jdbc:mysql://127.0.0.1:3306/shardingsphere_demo?autoReconnect=true&useSSL=false&allowMultiQueries=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
     username: root
@@ -42,4 +45,5 @@ spring:
           algorithms1:
             # 分片算法类型，这个type就是我们的分片算法实现类中 getType() 的返回值，SPI适用于这种方式
             type: HIS_DATA_SPI_BASED
+
 

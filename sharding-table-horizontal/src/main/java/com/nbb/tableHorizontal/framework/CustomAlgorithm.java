@@ -8,8 +8,12 @@ import org.apache.shardingsphere.sharding.api.sharding.standard.StandardSharding
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Properties;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Slf4j
 @Component
@@ -31,8 +35,45 @@ public class CustomAlgorithm implements StandardShardingAlgorithm<LocalDateTime>
     }
 
     @Override
-    public Collection<String> doSharding(Collection<String> collection, RangeShardingValue<LocalDateTime> rangeShardingValue) {
-        return null;
+    public Collection<String> doSharding(Collection<String> availableTargetNames, RangeShardingValue<LocalDateTime> shardingValue) {
+        List<LocalDateTime> rangeDateTime = new ArrayList<>();
+
+        // 给一个开始时间下限
+        LocalDateTime startDateTime = LocalDateTimeUtil.parse("2023-01-01 00:00:00", "yyyy-MM-dd HH:mm:ss");
+        if (shardingValue.getValueRange().hasLowerBound()) {
+            startDateTime = shardingValue.getValueRange().lowerEndpoint();
+        }
+        rangeDateTime.add(startDateTime);
+
+        // 给一个结束时间下限
+        LocalDateTime endDateTime = LocalDateTimeUtil.parse("2024-01-01 00:00:00", "yyyy-MM-dd HH:mm:ss");
+        if (shardingValue.getValueRange().hasUpperBound()) {
+            endDateTime = shardingValue.getValueRange().upperEndpoint();
+        }
+        rangeDateTime.add(endDateTime);
+
+
+
+        // 计算开始日和结束日所在月份相差几个月
+        int monthBetween = endDateTime.getMonthValue() - startDateTime.getMonthValue();
+
+        if (monthBetween > 0) {
+            // 如果中间间隔多个月，这几个月都需要添加
+            final LocalDateTime beginDateTime = startDateTime;
+            List<LocalDateTime> betweenMonth = IntStream.range(1, monthBetween)
+                    .mapToObj(num -> beginDateTime.plusMonths(num))
+                    .collect(Collectors.toList());
+            rangeDateTime.addAll(betweenMonth);
+        }
+
+        List<String> rangeTableName = rangeDateTime.stream()
+                // 逻辑表名拼月份
+                .map(time -> shardingValue.getLogicTableName() + LocalDateTimeUtil.format(time, "yyyyMM"))
+                .collect(Collectors.toList());
+
+
+        return rangeTableName;
+
     }
 
     @Override

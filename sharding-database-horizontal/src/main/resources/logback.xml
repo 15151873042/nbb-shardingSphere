@@ -4,7 +4,7 @@
 
 
     <!-- 日志名称 -->
-    <property name="log.app_name" value="${log.app-name:-sharding-table-horizontal}"/>
+    <property name="log.app_name" value="${log.app-name:-sharding-database-horizontal}"/>
     <!-- 日志输出位置 -->
     <property name="log.home_dir" value="${log.home:-./logs}"></property>
     <!-- 日志最大保留天数 -->

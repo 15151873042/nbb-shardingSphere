@@ -44,6 +44,6 @@ spring:
           # 分片算法名称
           algorithms1:
             # 分片算法类型，这个type就是我们的分片算法实现类中 getType() 的返回值，SPI适用于这种方式
-            type: HIS_DATA_SPI_BASED
+            type: hupeng_sharding_table
 
 

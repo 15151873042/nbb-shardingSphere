@@ -10,6 +10,7 @@
     <packaging>pom</packaging>
     <modules>
         <module>sharding-table-horizontal</module>
+        <module>sharding-database-horizontal</module>
     </modules>
 
     <properties>

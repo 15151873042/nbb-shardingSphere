@@ -15,6 +15,9 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+/**
+ * 按月分表的 Sharding 算法
+ */
 @Slf4j
 @Component
 public class CustomAlgorithm implements StandardShardingAlgorithm<LocalDateTime> {
@@ -34,6 +37,13 @@ public class CustomAlgorithm implements StandardShardingAlgorithm<LocalDateTime>
         return actuallyTableName;
     }
 
+    /**
+     * 范围路由算法
+     *
+     * @param availableTargetNames 可用的表列表（配置文件中配置的 actual-data-nodes会被解析成 列表被传递过来）
+     * @param shardingValue        值范围
+     * @return 路由后的结果表
+     */
     @Override
     public Collection<String> doSharding(Collection<String> availableTargetNames, RangeShardingValue<LocalDateTime> shardingValue) {
         List<LocalDateTime> rangeDateTime = new ArrayList<>();

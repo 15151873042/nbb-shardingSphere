@@ -1,0 +1,44 @@
+server:
+  port: 5050
+
+spring:
+  mvc:
+    format:
+      date-time: yyyy-MM-dd HH:mm:ss
+
+  shardingsphere:
+    # 配置显示sql，这项配置在测试的时候非常有用，建议打开，可以看到路由结果，生产环境可以关掉
+    props:
+      sql-show: true
+    datasource:
+      # 配置数据源列表，多个数据源使用逗号分割
+      names: ds_master, ds_slave_1, ds_slave_2
+      ds_master:
+        type: com.zaxxer.hikari.HikariDataSource
+        driver-class-name: com.mysql.jdbc.Driver
+        url: jdbc:mysql://127.0.0.1:3306/shardingsphere_demo?autoReconnect=true&useSSL=false&allowMultiQueries=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+        username: root
+        password: root
+      ds_slave_1:
+        type: com.zaxxer.hikari.HikariDataSource
+        driver-class-name: com.mysql.jdbc.Driver
+        url: jdbc:mysql://127.0.0.1:3306/shardingsphere_demo2?autoReconnect=true&useSSL=false&allowMultiQueries=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+        username: root
+        password: root
+      ds_slave_2:
+        type: com.zaxxer.hikari.HikariDataSource
+        driver-class-name: com.mysql.jdbc.Driver
+        url: jdbc:mysql://127.0.0.1:3306/shardingsphere_demo3?autoReconnect=true&useSSL=false&allowMultiQueries=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+        username: root
+        password: root
+
+    # 配置规则
+    rules:
+      readwrite-splitting:
+        data-sources:
+          demo1:
+            static-strategy:
+              write-data-source-name: ds_master
+              read-data-source-names:
+                - ds_slave_1
+                - ds_slave_2

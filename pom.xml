@@ -9,8 +9,9 @@
     <version>1.0</version>
     <packaging>pom</packaging>
     <modules>
-        <module>sharding-table-horizontal</module>
-        <module>sharding-database-horizontal</module>
+        <module>sharding-table</module>
+        <module>sharding-database</module>
+        <module>read-write-split</module>
     </modules>
 
     <properties>
